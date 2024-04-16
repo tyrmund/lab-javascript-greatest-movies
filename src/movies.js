@@ -124,20 +124,46 @@ function turnHoursToMinutes(moviesArray) {
 
 // BONUS - Iteration 8: Best yearly score average - Best yearly score average
 function bestYearAvg(moviesArray) {
+
     if (moviesArray.length === 0) return null
-    let bestYear
-    let bestYearAvg
 
     const orderedMovies = moviesArray.sort((a, b) => {
         const movieA = a.year
         const movieB = b.year
-        return movieA - movieB
+        if (movieA > movieB) return 1
+        else if (movieA < movieB) return -1
+        else if (movieA === movieB) return 0
     })
 
-    function createArrayByYear(array, year) {
-        const subArray = array.filter(elem => {
-            return elem.year === year
-        })
-        return subArray
-    }
+    const yearArray = orderedMovies.map(movie => {
+        return movie.year
+    })
+    const uniqueYearArray = yearArray.filter((year, index, arr) => {
+        return arr.indexOf(year) === index
+    })
+
+    const yearlyAvgScoreArray = uniqueYearArray.map(year => {
+        const yearlyTotalScore = orderedMovies.reduce((acc, movie) => {
+            if (movie.year === year) {
+                return acc + movie.score
+            } else {
+                return acc
+            }
+        }, 0)
+        const yearlyTotalMovies = orderedMovies.reduce((acc, movie) => {
+            if (movie.year === year) {
+                return acc + 1
+            } else {
+                return acc
+            }
+        }, 0)
+        return (yearlyTotalScore / yearlyTotalMovies)
+    })
+
+    const firstBestScore = Math.max(...yearlyAvgScoreArray)
+    const firstBestScoreIndex = yearlyAvgScoreArray.indexOf(firstBestScore)
+    const oldestBestYear = uniqueYearArray[firstBestScoreIndex]
+
+    return `The best year was ${oldestBestYear} with an average score of ${firstBestScore}`
+
 }
